@@ -18,8 +18,8 @@ app.use(cookieParser());
 // API Endpoints
 
 app.use('/company', companyRoutes);
-app.use('/employee', employeeRoutes);
-app.use('/file', fileRoutes);
+app.use('/company/employee', employeeRoutes);
+app.use('/company/file', fileRoutes);
 
 
 sequelize.sync({ force: false }).then(() => {

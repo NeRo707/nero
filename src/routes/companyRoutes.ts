@@ -7,14 +7,18 @@ import {
   logoutCompany,
   updateCompanyProfile,
   getCompanyProfile,
-} from "../controllers/authController";
-import verifyToken from "../middlewares/authMiddleware";
+  verifyEmail,
+} from "../controllers/authCompanyController";
 
+import verifyOwnerToken from "../middlewares/authCompanyMiddleware";
 
+router.get("/verify", verifyEmail);
 router.post("/register", registerCompany);
 router.post("/login", loginCompany);
 router.post("/logout", logoutCompany);
-router.route("/profile").get(verifyToken, getCompanyProfile).put(verifyToken, updateCompanyProfile);
-
+router
+  .route("/profile")
+  .get(verifyOwnerToken, getCompanyProfile)
+  .put(verifyOwnerToken, updateCompanyProfile);
 
 export default router;

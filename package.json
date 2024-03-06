@@ -17,6 +17,7 @@
     "@types/jsonwebtoken": "^9.0.6",
     "@types/multer": "^1.4.11",
     "@types/node": "^20.11.24",
+    "@types/nodemailer": "^6.4.14",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   },
@@ -29,6 +30,7 @@
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.1",
     "mysql2": "^3.9.2",
+    "nodemailer": "^6.9.11",
     "sequelize": "^6.37.1"
   }
 }

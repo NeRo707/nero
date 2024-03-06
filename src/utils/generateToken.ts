@@ -3,17 +3,30 @@ import jwt from "jsonwebtoken";
 
 const secret: any = process.env.JWT_SECRET;
 
-const generateToken = (res: Response, companyId: number) => {
+const generateCompanyToken = (res: Response, companyId: number) => {
   const token = jwt.sign({ companyId }, secret, {
-    expiresIn: "1d", // Set the expiration time for the token (1 day)
+    expiresIn: "30s", // Set the expiration time for the token (1 day)
   });
 
-  res.cookie("jwt", token, {
+  res.cookie("jwt_owner", token, {
     httpOnly: true,
     secure: true,
     sameSite: "strict",
-    maxAge: 1 * 24 * 60 * 60 * 1000, // 1 day
+    maxAge: 30 * 1000, // 30 seconds
   });
 };
 
-export default generateToken;
+const generateEmployeeToken = (res: Response, employeeId: number) => {
+  const token = jwt.sign({ employeeId }, secret, {
+    expiresIn: "30s", // Set the expiration time for the token (1 day)
+  })
+
+  res.cookie("jwt_employee", token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "strict",
+    maxAge: 30 * 1000, // 30 seconds
+  })
+}
+
+export { generateCompanyToken, generateEmployeeToken };
