@@ -30,3 +30,17 @@ export type TToken = Model & {
   employee_id: number;
   expiresAt: Date;
 }
+
+export type TSubscription = Model & {
+  id: number;
+  company_id: number;
+  plan_name: string;
+  max_files_per_month: number;
+  max_users: number;
+  price_per_user: number;
+  fixed_price: number;
+  additional_file_cost: number;
+  createdAt: Date;
+  updatedAt: Date;
+  expiration_date: Date;
+}

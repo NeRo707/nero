@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
-import { Company } from "../models/company";
+import { Company, Employee, Subscription } from "../models/company";
 import transporter from "../config/nodemailerConfig";
 import { generateEmailConfirmationToken } from "../utils/genEmailToken";
 import { generateCompanyToken } from "../utils/generateToken";
@@ -13,6 +13,13 @@ import { generateCompanyToken } from "../utils/generateToken";
 const loginCompany = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ success: false, error: "Missing required fields" });
+    }
+
     // console.log(req.body);s
 
     const company = await Company.findOne({ where: { email } });
@@ -43,11 +50,22 @@ const loginCompany = async (req: Request, res: Response) => {
     }
 
     // Generate and set a new JWT token
-    generateCompanyToken(res, company.dataValues.id);
+    const { owner_accessToken, owner_refreshToken } =
+      await generateCompanyToken(res, company.dataValues.id);
 
-    res
-      .status(200)
-      .json({ success: true, message: "Login successful", data: company });
+    res.cookie("owner_refreshToken", owner_refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
+    });
+
+    res.status(200).json({
+      success: true,
+      owner_accessToken,
+      message: "Login successful",
+      data: company,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, error: "Server Error" });
@@ -78,7 +96,7 @@ const verifyEmail = async (req: Request, res: Response) => {
       return res.status(400).json({ success: false, error: "Invalid token" });
     }
 
-    const updatedCompany = await company.update({
+    await company.update({
       verified: true,
     });
 
@@ -92,8 +110,10 @@ const verifyEmail = async (req: Request, res: Response) => {
 const registerCompany = async (req: Request, res: Response) => {
   const { company_name, email, password, country, industry } = req.body;
 
-  if(!company_name || !email || !password || !country || !industry) {
-    return res.status(400).json({ success: false, error: "Missing required fields" });
+  if (!company_name || !email || !password || !country || !industry) {
+    return res
+      .status(400)
+      .json({ success: false, error: "Missing required fields" });
   }
 
   let hashedPassword = await bcrypt.hash(password, 8);
@@ -114,8 +134,6 @@ const registerCompany = async (req: Request, res: Response) => {
     // console.log(newCompany.dataValues);
 
     if (newCompany) {
-      generateCompanyToken(res, newCompany.dataValues.id);
-
       const mailOptions = {
         from: "botnetx1@gmail.com",
         to: newCompany.email,
@@ -147,7 +165,7 @@ const registerCompany = async (req: Request, res: Response) => {
   @access    Public
 */
 const logoutCompany = async (req: Request, res: Response) => {
-  res.cookie("jwt_owner", "", {
+  res.cookie("owner_refreshToken", "", {
     httpOnly: true,
     expires: new Date(0),
   });
@@ -166,9 +184,24 @@ const getCompanyProfile = async (req: CustomRequest, res: Response) => {
   try {
     // The company ID is extracted from the verified token in the middleware
     const companyId = req.companyId;
-    
+
+    const employees = await Employee.findAll({
+      where: {
+        company_id: companyId,
+      },
+    });
+
+    const subscription = await Subscription.findOne({
+      where: {
+        company_id: companyId,
+      },
+      order: [["createdAt", "DESC"]],
+    });
+
     if (!companyId) {
-      return res.status(401).json({ success: false, error: "Unauthorized you are not owner" });
+      return res
+        .status(401)
+        .json({ success: false, error: "Unauthorized you are not owner" });
     }
 
     // Fetch the company profile from the database using the company ID
@@ -189,7 +222,12 @@ const getCompanyProfile = async (req: CustomRequest, res: Response) => {
     }
 
     // Respond with the company profile
-    res.status(200).json({ success: true, data: company });
+    res.status(200).json({
+      success: true,
+      subscription: subscription?.plan_name,
+      companyData: company,
+      employees,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, error: "Server Error" });
@@ -243,6 +281,81 @@ const updateCompanyProfile = async (req: CustomRequest, res: Response) => {
   }
 };
 
+const getSubscriptionStatus = async (req: CustomRequest, res: Response) => {
+  const companyId = req.companyId;
+
+  const subscription = await Subscription.findOne({
+    where: {
+      company_id: companyId,
+    },
+    order: [["createdAt", "DESC"]],
+  });
+
+  console.log(subscription);
+
+  if (!subscription) {
+    return res
+      .status(404)
+      .json({ success: false, error: "Subscription not found" });
+  }
+
+  res.status(200).json({ success: true, data: subscription });
+};
+
+const getSubscriptionPlans = async (req: CustomRequest, res: Response) => {
+  const subscriptionPlans = await Subscription.findAll({
+    where: {
+      company_id: null,
+    },
+  });
+  res.status(200).json({ success: true, data: subscriptionPlans });
+};
+
+const getSubscription = async (req: CustomRequest, res: Response) => {
+  const companyId = req.companyId;
+  const { plan } = req.params;
+
+  try {
+    console.log(plan);
+    //make subscription
+    const subscriptionData = await Subscription.findOne({
+      where: {
+        plan_name: plan,
+      },
+    });
+
+    if (!subscriptionData) {
+      return res.status(404).json({ success: false, error: "Plan not found" });
+    }
+
+    const {
+      max_files_per_month,
+      max_users,
+      price_per_user,
+      fixed_price,
+      additional_file_cost,
+    } = subscriptionData;
+
+    const expirationDate = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000); // 1 year from now
+
+    const subscription = await Subscription.create({
+      company_id: companyId,
+      plan_name: plan,
+      max_files_per_month,
+      max_users,
+      price_per_user,
+      fixed_price,
+      additional_file_cost,
+      expiration_date: expirationDate,
+    });
+
+    res.status(200).json({ success: true, data: subscription });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, error: "Server Error" });
+  }
+};
+
 export {
   loginCompany,
   registerCompany,
@@ -250,4 +363,7 @@ export {
   getCompanyProfile,
   updateCompanyProfile,
   verifyEmail,
+  getSubscriptionStatus,
+  getSubscriptionPlans,
+  getSubscription,
 };

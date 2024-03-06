@@ -4,18 +4,24 @@ import bcrypt from "bcrypt";
 import { generateEmployeeToken } from "../utils/generateToken";
 import transporter from "../config/nodemailerConfig";
 import { generateEmailConfirmationToken } from "../utils/genEmailToken";
-import RefreshToken from "../models/refreshtoken";
+// import RefreshToken from "../models/refreshtoken";
+import crypto from "crypto";
 
 type CustomRequest = Request & { employeeId?: number; companyId?: number };
 
 const verifyEmployee = async (req: Request, res: Response) => {
   try {
+    const { password } = req.body;
     const { token } = req.query;
-    // console.log(req.query);
+    console.log(req.query);
 
-    if (!token) {
-      return res.status(400).json({ message: "Invalid token" });
+    if (!token || !password) {
+      return res
+        .status(400)
+        .json({ message: "Invalid token or you did not include password" });
     }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const employee = await Employee.findOne({
       where: {
@@ -29,6 +35,7 @@ const verifyEmployee = async (req: Request, res: Response) => {
 
     const updatedEmployee = await employee.update({
       verified: true,
+      password: hashedPassword,
     });
 
     if (!updatedEmployee) {
@@ -68,29 +75,66 @@ const getEmployeeProfile = async (req: CustomRequest, res: Response) => {
 const addEmployee = async (req: CustomRequest, res: Response) => {
   const { companyId } = req;
 
-  const { email, password } = req.body;
+  const { email } = req.body;
   console.log(req.body);
   console.log(companyId);
-  if (!email || !password || !companyId) {
-    return res.status(400).json({ message: "Missing required fields" });
+  if (!email || !companyId) {
+    return res.status(400).json({
+      message:
+        "Missing required fields must include email and be a company owner",
+    });
   }
 
   // hash the password
-  const hashedPassword = await bcrypt.hash(password, 10);
+  const randomHash = crypto.randomBytes(32).toString("hex");
   const emailToken = generateEmailConfirmationToken();
 
   // Add the employee to the database
   try {
+    // Check if the employee exists
+
+    const employeeExists = await Employee.findOne({
+      where: {
+        email,
+      },
+    });
+
+    if (employeeExists) {
+      await employeeExists.update({
+        company_id: companyId,
+        email_verify_token: emailToken,
+      });
+
+      //send email to employee
+      const mailOptions = {
+        from: "botnetx1@gmail.com",
+        to: employeeExists.email,
+        subject: "Account Verification",
+        html: `
+            <p>Hello ${employeeExists.email},</p>
+            <p>Thank you for registering with our platform. Please verify your email by clicking the link below:</p>
+            <a href="http://localhost:3000/company/employee/verify?token=${emailToken}">Verify Email</a>
+          `,
+      };
+
+      await transporter.sendMail(mailOptions);
+
+      return res
+        .status(200)
+        .json({ message: "Existing Employee added successfully" });
+    }
+
+    // Create the employee
     const newEmployee = await Employee.create({
       company_id: companyId,
       email,
-      password: hashedPassword,
+      password: randomHash,
       email_verify_token: emailToken,
     });
 
     // Send a success response
     if (newEmployee) {
-      generateEmployeeToken(res, newEmployee.dataValues.id);
+      // generateEmployeeToken(res, newEmployee.dataValues.id);
       // send email
       const mailOptions = {
         from: "botnetx1@gmail.com",
@@ -129,9 +173,8 @@ const removeEmployee = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "employee not found" });
     }
 
-    await employee.update({ company_id: null });
-      
-      
+    await employee.update({ company_id: null, verified: false });
+
     res.status(200).json({ message: "employee removed successfully" });
   } catch (err) {
     console.log(err);
@@ -186,11 +229,12 @@ const authEmployee = async (req: Request, res: Response) => {
   }
 
   // Create a JWT token
-  const Tokens = await generateEmployeeToken(res, employee.dataValues.id);
+  const { employee_accessToken, employee_refreshToken } =
+    await generateEmployeeToken(res, employee.dataValues.id);
 
   // console.log(employee.dataValues);
 
-  res.cookie("employee_refreshToken", Tokens.employee_refreshToken, {
+  res.cookie("employee_refreshToken", employee_refreshToken, {
     httpOnly: true,
     secure: true,
     sameSite: "strict",
@@ -199,7 +243,7 @@ const authEmployee = async (req: Request, res: Response) => {
 
   res.status(200).json({
     message: "Login successful",
-    accessToken: Tokens.employee_accessToken,
+    accessToken: employee_accessToken,
   });
 };
 

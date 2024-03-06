@@ -6,17 +6,38 @@ import { Op } from "sequelize";
 const secret: any = process.env.JWT_SECRET;
 const refreshSecret: any = process.env.JWT_REFRESH_SECRET;
 
-const generateCompanyToken = (res: Response, companyId: number) => {
-  const token = jwt.sign({ companyId }, secret, {
-    expiresIn: "1d", // Set the expiration time for the token (1 day)
+const generateCompanyToken = async (res: Response, companyId: number) => {
+  const owner_accessToken = jwt.sign({ companyId }, secret, {
+    expiresIn: "15m",
   });
 
-  res.cookie("jwt_owner", token, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "strict",
-    maxAge: 1000 * 60 * 60 * 24, // 1 day
+  const owner_refreshToken = jwt.sign({ companyId }, refreshSecret, {
+    expiresIn: "1d",
   });
+
+  const refreshToken = await RefreshToken.findOne({
+    where: { company_id: companyId, expiresAt: { [Op.gte]: new Date() } },
+  });
+
+  if (!refreshToken) {
+    await RefreshToken.create({
+      company_id: companyId,
+      expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24), // 1 day
+      token: owner_refreshToken,
+    });
+  }
+
+  if (refreshToken?.dataValues.token !== owner_refreshToken) {
+    await RefreshToken.update(
+      { token: owner_refreshToken },
+      { where: { company_id: companyId } }
+    );
+  }
+
+  return {
+    owner_accessToken,
+    owner_refreshToken,
+  };
 };
 
 const generateEmployeeToken = async (res: Response, employeeId: number) => {
@@ -56,7 +77,6 @@ const generateEmployeeToken = async (res: Response, employeeId: number) => {
       }
     );
   }
-
 
   return { employee_accessToken, employee_refreshToken };
 };

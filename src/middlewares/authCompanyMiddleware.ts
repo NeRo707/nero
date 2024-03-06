@@ -2,11 +2,11 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
 type CustomRequest = Request & { companyId?: number };
-const verifyOwnerToken = (req: any, res: any, next: NextFunction) => {
+const verifyOwnerToken = (req: CustomRequest, res: any, next: NextFunction) => {
   // console.log(req.cookies.jwt);
-  const owner_token = req.cookies.jwt_owner;
+  const owner_token = req.headers.authorization?.split(" ")[1];
 
-  console.log(req.cookies);
+  console.log(req.headers.authorization);
 
   if (!owner_token) {
     return res.status(401).json({

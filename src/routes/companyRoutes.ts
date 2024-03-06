@@ -8,14 +8,20 @@ import {
   updateCompanyProfile,
   getCompanyProfile,
   verifyEmail,
+  getSubscriptionStatus,
+  getSubscriptionPlans,
+  getSubscription,
 } from "../controllers/authCompanyController";
 
 import verifyOwnerToken from "../middlewares/authCompanyMiddleware";
 
-router.get("/verify", verifyEmail);
-router.post("/register", registerCompany);
-router.post("/login", loginCompany);
-router.post("/logout", logoutCompany);
+router.get("/subscription/status", verifyOwnerToken, getSubscriptionStatus);
+router.get("/subscription/plans", verifyOwnerToken, getSubscriptionPlans);
+router.post('/subscription/:plan', verifyOwnerToken, getSubscription);
+router.get("/verify", verifyEmail); //v
+router.post("/register", registerCompany); //v
+router.post("/login", loginCompany); // v
+router.post("/logout", logoutCompany); // v
 router
   .route("/profile")
   .get(verifyOwnerToken, getCompanyProfile)
