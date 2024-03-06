@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import { generateEmployeeToken } from "../utils/generateToken";
 import transporter from "../config/nodemailerConfig";
 import { generateEmailConfirmationToken } from "../utils/genEmailToken";
+import RefreshToken from "../models/refreshtoken";
 
 type CustomRequest = Request & { employeeId?: number; companyId?: number };
 
@@ -114,13 +115,38 @@ const addEmployee = async (req: CustomRequest, res: Response) => {
   }
 };
 
-const removeEmployee = () => {};
+const removeEmployee = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    console.log(req.params);
+    if (!id) {
+      return res.status(400).json({ message: "employee not found wrong id?" });
+    }
+
+    const employee = await Employee.findByPk(id);
+    console.log(employee);
+    if (!employee) {
+      return res.status(404).json({ message: "employee not found" });
+    }
+
+    await employee.update({ company_id: null });
+      
+      
+    res.status(200).json({ message: "employee removed successfully" });
+  } catch (err) {
+    console.log(err);
+  }
+};
 
 const logoutEmployee = (req: Request, res: Response) => {
-  res.cookie("jwt_employee", "", {
+  res.cookie("employee_refreshToken", "", {
     httpOnly: true,
     expires: new Date(0),
   });
+
+  // req.headers.authorization = "";
+
+  console.log();
 
   res.status(200).json({ message: "Employee Logged Out" });
 };
@@ -160,9 +186,21 @@ const authEmployee = async (req: Request, res: Response) => {
   }
 
   // Create a JWT token
-  generateEmployeeToken(res, employee.dataValues.id);
+  const Tokens = await generateEmployeeToken(res, employee.dataValues.id);
 
-  res.status(200).json({ message: "Login successful" });
+  // console.log(employee.dataValues);
+
+  res.cookie("employee_refreshToken", Tokens.employee_refreshToken, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "strict",
+    maxAge: 24 * 60 * 60 * 1000, // 1 day
+  });
+
+  res.status(200).json({
+    message: "Login successful",
+    accessToken: Tokens.employee_accessToken,
+  });
 };
 
 export {

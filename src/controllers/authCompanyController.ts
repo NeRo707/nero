@@ -92,6 +92,10 @@ const verifyEmail = async (req: Request, res: Response) => {
 const registerCompany = async (req: Request, res: Response) => {
   const { company_name, email, password, country, industry } = req.body;
 
+  if(!company_name || !email || !password || !country || !industry) {
+    return res.status(400).json({ success: false, error: "Missing required fields" });
+  }
+
   let hashedPassword = await bcrypt.hash(password, 8);
   const emailToken = generateEmailConfirmationToken();
 

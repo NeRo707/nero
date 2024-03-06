@@ -1,27 +1,32 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
-type CustomRequest = Request & { companyId?: number };
-const verifyEmployeeToken = (req: any, res: any, next: NextFunction) => {
+type CustomRequest = Request & { employeeId?: number };
+const verifyEmployeeToken = (
+  req: CustomRequest,
+  res: any,
+  next: NextFunction
+) => {
   // console.log(req.cookies.jwt);
-  const employee_token = req.cookies.jwt_employee;
+  const employeeAccessToken = req.headers.authorization?.split(" ")[1];
 
-  console.log(req.cookies);
+  console.log(req.headers.authorization);
 
-  if (!employee_token) {
+  if (!employeeAccessToken) {
     return res.status(401).json({
       success: false,
-      error: "Unauthorized - Token not provided | Not owner",
+      error: "Unauthorized - Token not provided | Not Employee",
     });
   }
 
-  if (employee_token) {
+  if (employeeAccessToken) {
     try {
       jwt.verify(
-        employee_token,
+        employeeAccessToken,
         process.env.JWT_SECRET as any,
         (err: Error | null, decoded: any) => {
           if (err) {
+            console.log(err.message);
             return res
               .status(401)
               .json({ success: false, error: "Unauthorized - Invalid token" });

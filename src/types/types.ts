@@ -22,3 +22,11 @@ export type TEmployee = Model & {
   updatedAt: Date;
   email_verify_token: string;
 }
+
+export type TToken = Model & {
+  id: number;
+  token: string;
+  company_id: number;
+  employee_id: number;
+  expiresAt: Date;
+}
