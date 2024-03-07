@@ -1,16 +1,17 @@
 import express from "express";
 const router = express.Router();
 
-import {
-  authEmployee,
-  logoutEmployee,
-  verifyEmployee,
-  getEmployeeProfile,
-  getFiles,
-} from "../controllers/authEmployeeController";
-
 import verifyEmployeeToken from "../middlewares/authEmployeeMiddleware";
 import refreshEmployeeToken from "../middlewares/refreshEmployeeToken";
+
+
+import {
+  authEmployee,
+  getEmployeeProfile,
+  getFiles,
+  logoutEmployee,
+  verifyEmployee,
+} from "../controllers";
 
 router.post("/login", authEmployee); // v
 router.post("/logout", logoutEmployee); // v

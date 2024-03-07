@@ -1,3 +1,4 @@
+import { Request } from "express";
 import { Model } from "sequelize";
 
 export type TCompany =  Model & {
@@ -44,3 +45,7 @@ export type TSubscription = Model & {
   updatedAt: Date;
   expiration_date: Date;
 }
+
+export type TCustomRequestC = Request & { companyId?: number; } & Request;
+
+export type TCustomRequestE = Request & { employeeId?: number; companyId?: number };
