@@ -130,10 +130,54 @@ const Subscription = sequelize.define<TSubscription>("Subscription", {
   },
 });
 
+const Files = sequelize.define("Files", {
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
+    allowNull: false,
+  },
+  company_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  file_name: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  file_type: {
+    type: DataTypes.ENUM("CSV", "XLS", "XLSX"),
+  },
+  shared_with_all: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+  },
+  employee_id: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
+  createdAt: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW,
+  },
+  updatedAt: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW,
+  },
+});
 
 Employee.belongsTo(Company, { foreignKey: "company_id" });
 Company.hasMany(Employee, { foreignKey: "company_id" });
 
 Subscription.belongsTo(Company, { foreignKey: "company_id" });
 Company.hasOne(Subscription, { foreignKey: "company_id" });
-export { Company, Employee, Subscription };
+
+Company.hasMany(Files, { foreignKey: "company_id" });
+Employee.hasMany(Files, { foreignKey: "employee_id" });
+
+// Files.belongsToMany(Employee, { through: "id" });
+// Files.belongsToMany(Company, { through: "company_id" });
+
+export { Company, Employee, Subscription, Files };

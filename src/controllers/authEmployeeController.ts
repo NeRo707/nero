@@ -1,11 +1,7 @@
 import { Request, Response } from "express";
-import { Employee } from "../models/company";
+import { Employee, Files } from "../models/company";
 import bcrypt from "bcrypt";
 import { generateEmployeeToken } from "../utils/generateToken";
-import transporter from "../config/nodemailerConfig";
-import { generateEmailConfirmationToken } from "../utils/genEmailToken";
-// import RefreshToken from "../models/refreshtoken";
-import crypto from "crypto";
 
 type CustomRequest = Request & { employeeId?: number; companyId?: number };
 
@@ -72,115 +68,6 @@ const getEmployeeProfile = async (req: CustomRequest, res: Response) => {
   }
 };
 
-const addEmployee = async (req: CustomRequest, res: Response) => {
-  const { companyId } = req;
-
-  const { email } = req.body;
-  console.log(req.body);
-  console.log(companyId);
-  if (!email || !companyId) {
-    return res.status(400).json({
-      message:
-        "Missing required fields must include email and be a company owner",
-    });
-  }
-
-  // hash the password
-  const randomHash = crypto.randomBytes(32).toString("hex");
-  const emailToken = generateEmailConfirmationToken();
-
-  // Add the employee to the database
-  try {
-    // Check if the employee exists
-
-    const employeeExists = await Employee.findOne({
-      where: {
-        email,
-      },
-    });
-
-    if (employeeExists) {
-      await employeeExists.update({
-        company_id: companyId,
-        email_verify_token: emailToken,
-      });
-
-      //send email to employee
-      const mailOptions = {
-        from: "botnetx1@gmail.com",
-        to: employeeExists.email,
-        subject: "Account Verification",
-        html: `
-            <p>Hello ${employeeExists.email},</p>
-            <p>Thank you for registering with our platform. Please verify your email by clicking the link below:</p>
-            <a href="http://localhost:3000/company/employee/verify?token=${emailToken}">Verify Email</a>
-          `,
-      };
-
-      await transporter.sendMail(mailOptions);
-
-      return res
-        .status(200)
-        .json({ message: "Existing Employee added successfully" });
-    }
-
-    // Create the employee
-    const newEmployee = await Employee.create({
-      company_id: companyId,
-      email,
-      password: randomHash,
-      email_verify_token: emailToken,
-    });
-
-    // Send a success response
-    if (newEmployee) {
-      // generateEmployeeToken(res, newEmployee.dataValues.id);
-      // send email
-      const mailOptions = {
-        from: "botnetx1@gmail.com",
-        to: newEmployee.email,
-        subject: "Account Verification",
-        html: `
-          <p>Hello ${newEmployee.email},</p>
-          <p>Thank you for registering with our platform. Please verify your email by clicking the link below:</p>
-          <a href="http://localhost:3000/company/employee/verify?token=${emailToken}">Verify Email</a>
-        `,
-      };
-
-      await transporter.sendMail(mailOptions);
-    }
-
-    res.status(201).json({ message: "Employee added successfully" });
-  } catch (error) {
-    console.log(error);
-    res
-      .status(500)
-      .json({ message: "Internal server error company does not exist?" });
-  }
-};
-
-const removeEmployee = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    console.log(req.params);
-    if (!id) {
-      return res.status(400).json({ message: "employee not found wrong id?" });
-    }
-
-    const employee = await Employee.findByPk(id);
-    console.log(employee);
-    if (!employee) {
-      return res.status(404).json({ message: "employee not found" });
-    }
-
-    await employee.update({ company_id: null, verified: false });
-
-    res.status(200).json({ message: "employee removed successfully" });
-  } catch (err) {
-    console.log(err);
-  }
-};
-
 const logoutEmployee = (req: Request, res: Response) => {
   res.cookie("employee_refreshToken", "", {
     httpOnly: true,
@@ -207,8 +94,14 @@ const authEmployee = async (req: Request, res: Response) => {
     },
   });
 
+  console.log("DB-Employee: ",employee);
+
   if (!employee) {
     return res.status(401).json({ message: "Invalid credentials" });
+  }
+
+  if (employee.dataValues.verified === false) {
+    return res.status(401).json({ message: "Please verify your email first" });
   }
 
   console.log(employee.dataValues);
@@ -247,11 +140,43 @@ const authEmployee = async (req: Request, res: Response) => {
   });
 };
 
+const getFiles = async (req: any, res: Response) => {
+  const { employeeId } = req;
+
+  console.log(req.body);
+  if (!employeeId) {
+    return res.status(400).json({ message: "Missing employee id" });
+  }
+
+  const employee = await Employee.findByPk(employeeId);
+
+  console.log(employee);
+
+  if (!employee) {
+    return res.status(404).json({ message: "Employee not found" });
+  }
+
+  const workFiles = await Files.findAll({
+    where: {
+      employee_id: employeeId,
+    },
+  });
+
+  const sharedFiles = await Files.findAll({
+    where: {
+      shared_with_all: true,
+    },
+  });
+
+  console.log(workFiles);
+
+  res.status(200).json({ assignedFiles: workFiles, sharedFiles: sharedFiles });
+};
+
 export {
-  addEmployee,
-  removeEmployee,
   authEmployee,
   logoutEmployee,
   verifyEmployee,
   getEmployeeProfile,
+  getFiles,
 };

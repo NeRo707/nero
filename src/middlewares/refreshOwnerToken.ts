@@ -1,22 +1,14 @@
 import { NextFunction, Request, Response } from "express";
 import RefreshToken from "../models/refreshtoken";
 import { Op } from "sequelize";
-import { generateEmployeeToken } from "../utils/generateToken";
+import { generateCompanyToken } from "../utils/generateToken";
 
-/**
- * Verify refresh token and generate new access token for employee.
- *
- * @param {Request} req - the request object
- * @param {Response} res - the response object
- * @param {NextFunction} next - the next middleware function
- * @returns {Promise<Response | void>} a Promise that resolves to void
- */
-const refreshEmployeeToken = async (
+const refreshOwnerToken = async (
   req: Request,
   res: Response,
   next: NextFunction
-): Promise<Response | void> => {
-  const refreshToken = req.cookies.employee_refreshToken;
+) => {
+  const refreshToken = req.cookies.owner_refreshToken;
   console.log(req.cookies);
 
   if (!refreshToken) {
@@ -40,29 +32,29 @@ const refreshEmployeeToken = async (
         .json({ error: "Unauthorized - Invalid refresh token" });
     }
 
-    const { employee_id } = storedRefreshToken;
+    const { company_id } = storedRefreshToken;
 
     // Generate a new access token and refresh token
-    const { employee_accessToken, employee_refreshToken } =
-      await generateEmployeeToken(res, employee_id);
+    const { owner_accessToken, owner_refreshToken } =
+      await generateCompanyToken(res, company_id);
     // Update the refresh token in the database
     await RefreshToken.update(
       {
-        token: employee_refreshToken,
+        token: owner_refreshToken,
         expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
       },
       { where: { token: refreshToken } }
     );
 
     // Set the new refresh token as an HTTP-only cookie
-    res.cookie("employee_refreshToken", employee_refreshToken, {
+    res.cookie("owner_refreshToken", owner_refreshToken, {
       httpOnly: true,
       secure: true,
       sameSite: "strict",
       maxAge: 24 * 60 * 60 * 1000, // 1 day
     });
 
-    return res.json({ employee_accessToken });
+    return res.json({ owner_accessToken });
   } catch (error) {
     return res
       .status(401)
@@ -70,4 +62,4 @@ const refreshEmployeeToken = async (
   }
 };
 
-export default refreshEmployeeToken;
+export default refreshOwnerToken;

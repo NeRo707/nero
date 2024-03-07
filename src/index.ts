@@ -21,7 +21,6 @@ app.use('/company', companyRoutes);
 app.use('/company/employee', employeeRoutes);
 app.use('/company/file', fileRoutes);
 
-
 sequelize.sync({ force: false }).then(() => {
   app.listen(port, () => {
     console.log(`Server is running on port: ${port}`);
