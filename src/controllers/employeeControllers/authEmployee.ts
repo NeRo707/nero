@@ -3,15 +3,10 @@ import { Employee } from "../../models/company";
 import bcrypt from "bcrypt";
 import { generateEmployeeToken } from "../../utils/generateToken";
 
-/**
- * Authenicate an employee with the provided email and password.
- *
- * @param {Request} req - the request object
- * @param {Response} res - the response object
- * @return {Promise<Response | void>} A Promise that resolves with the authentication result
- */
+
 export const authEmployee = async (req: Request, res: Response): Promise<Response | void> => {
   const { email, password } = req.body;
+  console.log(req.body);
   if (!email || !password) {
     return res.status(400).json({ message: "Missing required fields" });
   }

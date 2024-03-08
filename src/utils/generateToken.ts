@@ -8,7 +8,7 @@ const refreshSecret: any = process.env.JWT_REFRESH_SECRET;
 
 const generateCompanyToken = async (res: Response, companyId: number) => {
   const owner_accessToken = jwt.sign({ companyId }, secret, {
-    expiresIn: "15m",
+    expiresIn: "25m",
   });
 
   const owner_refreshToken = jwt.sign({ companyId }, refreshSecret, {
@@ -42,7 +42,7 @@ const generateCompanyToken = async (res: Response, companyId: number) => {
 
 const generateEmployeeToken = async (res: Response, employeeId: number) => {
   const employee_accessToken = jwt.sign({ employeeId }, secret, {
-    expiresIn: "15m",
+    expiresIn: "25m",
   });
 
   const employee_refreshToken = jwt.sign({ employeeId }, refreshSecret, {

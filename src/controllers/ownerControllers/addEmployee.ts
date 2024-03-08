@@ -4,6 +4,8 @@ import { generateEmailConfirmationToken } from "../../utils/genEmailToken";
 import { Employee } from "../../models/company";
 import transporter from "../../config/nodemailerConfig";
 
+const PORT = process.env.PORT ? parseInt(process.env.PORT) : 8080;
+
 type CustomRequest = Request & { companyId?: number };
 /**
  * Asynchronous function to add an employee to the database.
@@ -55,12 +57,15 @@ export const addEmployee = async (
         subject: "Account Verification",
         html: `
             <p>Hello ${employeeExists.email},</p>
-            <p>Thank you for registering with our platform. Please verify your email by clicking the link below: and inputting password <POST></p>
-            <a href="http://localhost:3000/company/employee/verify?token=${emailToken}">Verify Email</a>
+            <p>Thank you for registering with our platform. Please verify your email by clicking the link below: and inputting password <POST in POSTMAN></p>
+            <a href="http://localhost:${PORT}/company/employee/verify?token=${emailToken}&password">Verify Email</a>
           `,
       };
-
-      await transporter.sendMail(mailOptions);
+      
+        await transporter.sendMail(mailOptions);
+       
+      
+        
 
       return res
         .status(200)
@@ -86,7 +91,7 @@ export const addEmployee = async (
         html: `
           <p>Hello ${newEmployee.email},</p>
           <p>Thank you for registering with our platform. Please verify your email by clicking the link below:</p>
-          <a href="http://localhost:3000/company/employee/verify?token=${emailToken}">Verify Email</a>
+          <a href="http://localhost:${PORT}/company/employee/verify?token=${emailToken}&password">Verify Email</a>
         `,
       };
 

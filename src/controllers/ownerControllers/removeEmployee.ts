@@ -13,7 +13,7 @@ export const removeEmployee = async (req: Request, res: Response): Promise<Respo
     const { id } = req.params;
     console.log(req.params);
     if (!id) {
-      return res.status(400).json({ message: "employee not found wrong id?" });
+      return res.status(400).json({ message: "please input employee id" });
     }
 
     const employee = await Employee.findByPk(id);

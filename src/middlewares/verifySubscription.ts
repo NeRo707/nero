@@ -51,7 +51,7 @@ const verifySubscription = async (
       .status(403)
       .send({ error: `Employee limit reached for ${plan_name} subscription` });
   }
-
+  
   next();
 };
 

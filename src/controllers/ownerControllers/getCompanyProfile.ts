@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Company, Employee, Subscription } from "../../models/company";
+import { Company, Employee, Files, Subscription } from "../../models/company";
 
 import { TCustomRequestC as CustomRequest } from "../../types/types";
 /**
@@ -26,6 +26,12 @@ export const getCompanyProfile = async (req: CustomRequest, res: Response): Prom
       },
       order: [["createdAt", "DESC"]],
     });
+
+    const files = await Files.findAll({
+      where: {
+        company_id: companyId,
+      }
+    })
 
     if (!companyId) {
       return res
@@ -54,6 +60,7 @@ export const getCompanyProfile = async (req: CustomRequest, res: Response): Prom
     res.status(200).json({
       success: true,
       subscription: subscription?.plan_name,
+      filesCount: files.length,
       companyData: company,
       employees,
     });

@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  mysqldb:
+    image: mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: db123
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+    ports:
+      - 3306:3306
+    expose:
+      - 3306
+    volumes:
+      - db:/var/lib/mysql
+    
+
+  web:
+    depends_on:
+      - mysqldb
+    build: .
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    expose:
+      - 8080
+volumes:
+  db:

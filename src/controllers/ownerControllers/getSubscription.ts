@@ -4,12 +4,15 @@ import { Employee, Subscription } from "../../models/company";
 import { TCustomRequestC as CustomRequest } from "../../types/types";
 /**
  * Asynchronous function to get subscription.
- * 
+ *
  * @param {CustomRequest} req - The request object.
  * @param {Response} res - The response object.
  * @returns {Promise<Response | void>} - A Promise that resolves with the response object.
  */
-export const getSubscription = async (req: CustomRequest, res: Response): Promise<Response | void> => {
+export const getSubscription = async (
+  req: CustomRequest,
+  res: Response
+): Promise<Response | void> => {
   const companyId = req.companyId;
   const { plan } = req.params;
 
@@ -34,7 +37,7 @@ export const getSubscription = async (req: CustomRequest, res: Response): Promis
       additional_file_cost,
     } = subscriptionData;
 
-    const expirationDate = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000); // 1 year from now
+    const expirationDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // a month from now
 
     const currentSubscription = await Subscription.findOne({
       where: {

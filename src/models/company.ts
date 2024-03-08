@@ -1,6 +1,6 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/db";
-import { TCompany, TEmployee, TSubscription } from "../types/types";
+import { TCompany, TEmployee, TFile, TSubscription } from "../types/types";
 
 const Company = sequelize.define<TCompany>("Company", {
   id: {
@@ -130,7 +130,7 @@ const Subscription = sequelize.define<TSubscription>("Subscription", {
   },
 });
 
-const Files = sequelize.define("Files", {
+const Files = sequelize.define<TFile>("Files", {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -168,6 +168,31 @@ const Files = sequelize.define("Files", {
   },
 });
 
+const FileEmployeeMapping = sequelize.define("filejunction", {
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
+    allowNull: false,
+  },
+  file_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: Files,
+      key: "id",
+    },
+  },
+  employee_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: Employee,
+      key: "id",
+    },
+  },
+});
+
 Employee.belongsTo(Company, { foreignKey: "company_id" });
 Company.hasMany(Employee, { foreignKey: "company_id" });
 
@@ -177,7 +202,11 @@ Company.hasOne(Subscription, { foreignKey: "company_id" });
 Company.hasMany(Files, { foreignKey: "company_id" });
 Employee.hasMany(Files, { foreignKey: "employee_id" });
 
+
+Files.belongsToMany(Employee, { through: FileEmployeeMapping, foreignKey: "file_id" });
+Employee.belongsToMany(Files, { through: FileEmployeeMapping, foreignKey: "employee_id" });
+
 // Files.belongsToMany(Employee, { through: "id" });
 // Files.belongsToMany(Company, { through: "company_id" });
 
-export { Company, Employee, Subscription, Files };
+export { Company, Employee, Subscription, Files, FileEmployeeMapping };

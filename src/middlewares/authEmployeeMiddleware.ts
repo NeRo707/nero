@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
+
 type CustomRequest = Request & { employeeId?: number };
 const verifyEmployeeToken = (
   req: CustomRequest,
@@ -10,7 +11,9 @@ const verifyEmployeeToken = (
   // console.log(req.cookies.jwt);
   const employeeAccessToken = req.headers.authorization?.split(" ")[1];
 
-  console.log(req.headers.authorization);
+  console.log("-------",req.headers.authorization);
+
+  console.log(employeeAccessToken);
 
   if (!employeeAccessToken) {
     return res.status(401).json({

@@ -4,6 +4,8 @@ import { generateEmailConfirmationToken } from "../../utils/genEmailToken";
 import { Company } from "../../models/company";
 import transporter from "../../config/nodemailerConfig";
 
+const PORT = process.env.PORT ? parseInt(process.env.PORT) : 8080;
+
 /**
  * Registers a new company using the provided request data, including company name, email, password, country, and industry.
  *
@@ -45,7 +47,7 @@ export const registerCompany = async (req: Request, res: Response): Promise<Resp
         html: `
           <p>Hello ${newCompany.company_name},</p>
           <p>Thank you for registering with our platform. Please verify your email by clicking the link below:</p>
-          <a href="http://localhost:3000/company/verify?token=${emailToken}">Verify Email</a>
+          <a href="http://localhost:${PORT}/company/verify?token=${emailToken}">Verify Email</a>
         `,
       };
 

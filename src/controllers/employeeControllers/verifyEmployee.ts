@@ -11,8 +11,7 @@ import { Employee } from "../../models/company";
  */
 export const verifyEmployee = async (req: Request, res: Response): Promise<Response | void> => {
   try {
-    const { password } = req.body;
-    const { token } = req.query;
+    const { token, password } = req.query as { token: string; password: string };
     console.log(req.query);
 
     if (!token || !password) {

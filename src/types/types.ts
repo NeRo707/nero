@@ -46,6 +46,26 @@ export type TSubscription = Model & {
   expiration_date: Date;
 }
 
+export type TFile = Model & {
+  id: number;
+  company_id: number;
+  file_name: string;
+  file_type: string;
+  shared_with_all: boolean;
+  employee_id: number;
+  addEmployees: any;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export type TFileEmployeeMapping = Model & {
+  id: number;
+  file_id: number;
+  employee_id: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export type TCustomRequestC = Request & { companyId?: number; } & Request;
 
 export type TCustomRequestE = Request & { employeeId?: number; companyId?: number };
