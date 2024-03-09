@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
-import { Employee } from "../../models/company";
+import { Employee } from "../../../models/company";
 
 /**
  * Verify employee with provided token and password.

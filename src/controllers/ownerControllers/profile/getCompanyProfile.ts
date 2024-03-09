@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { Company, Employee, Files, Subscription } from "../../models/company";
+import { Company, Employee, Files, Subscription } from "../../../models/company";
 
-import { TCustomRequestC as CustomRequest } from "../../types/types";
+import { TCustomRequestC as CustomRequest } from "../../../types/types";
 /**
  * Get the company profile, including employees, subscription, and company data.
  *

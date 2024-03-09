@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import  bcrypt  from 'bcrypt';
-import { generateEmailConfirmationToken } from "../../utils/genEmailToken";
-import { Company } from "../../models/company";
-import transporter from "../../config/nodemailerConfig";
+import { generateEmailConfirmationToken } from "../../../utils/genEmailToken";
+import { Company } from "../../../models/company";
+import transporter from "../../../config/nodemailerConfig";
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 8080;
 

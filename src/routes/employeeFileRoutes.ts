@@ -2,8 +2,8 @@ import express from "express";
 import multer from "multer";
 import { editUploadedFile, getCompanyFile, uploadCompanyFile } from "../controllers";
 import { verifyOwnerToken } from "../middlewares";
-import { verifyUpload } from "../middlewares/verifyUpload";
-import { getAllFiles } from "../controllers/ownerControllers/getAllFiles";
+import { verifyUpload } from "../middlewares/auth/verifyUpload";
+import { getAllFiles } from "../controllers/ownerControllers/files/getAllFiles";
 
 const router = express.Router();
 
@@ -26,7 +26,6 @@ router.patch("/:visibility/:id", verifyOwnerToken, editUploadedFile);
 // Get list of Company files
 //company/file
 router.get("/", verifyOwnerToken, getAllFiles);
-
 
 // Get a single file
 router.get('/:id/', verifyOwnerToken, getCompanyFile);

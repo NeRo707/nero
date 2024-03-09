@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Employee } from "../../models/company";
+import { Employee } from "../../../models/company";
 
 /**
  * Remove an employee from the system.

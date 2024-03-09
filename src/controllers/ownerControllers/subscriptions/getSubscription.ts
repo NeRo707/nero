@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
-import { Employee, Subscription } from "../../models/company";
+import { Billing, Employee, Subscription } from "../../../models/company";
 
-import { TCustomRequestC as CustomRequest } from "../../types/types";
+import { TCustomRequestC as CustomRequest } from "../../../types/types";
+import { Op } from "sequelize";
 /**
  * Asynchronous function to get subscription.
  *
@@ -42,9 +43,22 @@ export const getSubscription = async (
     const currentSubscription = await Subscription.findOne({
       where: {
         company_id: companyId,
+        id: {
+          [Op.ne]: subscriptionData.id, // Exclude the current subscription ID
+        },
+        expiration_date: {
+          [Op.gte]: new Date(), // Check for active subscriptions (not expired)
+        },
       },
       order: [["createdAt", "DESC"]],
     });
+
+    if (currentSubscription && currentSubscription.plan_name === plan) {
+      return res.status(400).json({
+        success: false,
+        error: "You already have an active subscription for this plan.",
+      });
+    }
 
     if (currentSubscription && currentSubscription.plan_name !== plan) {
       // Count the number of employees for the company
@@ -85,7 +99,52 @@ export const getSubscription = async (
       expiration_date: expirationDate,
     });
 
-    res.status(200).json({ success: true, data: subscription });
+    const billingPeriodStart = new Date();
+    const billingPeriodEnd = new Date(
+      billingPeriodStart.getTime() + 30 * 24 * 60 * 60 * 1000 // 30 days
+    );
+
+    const employeeCount = await Employee.count({
+      where: {
+        company_id: companyId,
+      },
+    });
+
+    let amountDue;
+
+    switch (plan) {
+      case "free":
+        amountDue = 0;
+        break;
+      case "basic":
+        if (employeeCount <= 1) {
+          amountDue = 5;
+        } else {
+          amountDue = 5 + (employeeCount - 1) * price_per_user;
+        }
+        break;
+      case "premium":
+        amountDue = fixed_price;
+        break;
+      default:
+        return res
+          .status(404)
+          .json({ success: false, error: "Plan not found" });
+    }
+
+    const billingRecord = await Billing.create({
+      company_id: companyId,
+      subscription_id: subscription.id,
+      start_date: billingPeriodStart,
+      end_date: billingPeriodEnd,
+      amount_due: amountDue,
+    });
+
+    res.status(200).json({
+      success: true,
+      data: subscription,
+      billing: billingRecord,
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, error: "Server Error" });

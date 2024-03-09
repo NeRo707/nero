@@ -1,10 +1,11 @@
 import { Response } from "express";
-import { TCustomRequestC as CustomRequest } from "../../types/types";
-import { Files } from "../../models/company";
+import { TCustomRequestC as CustomRequest } from "../../../types/types";
+import { Files } from "../../../models/company";
 
 export const uploadCompanyFile = async (req: CustomRequest, res: Response) => {
   const { visibility } = req.params;
   const { companyId } = req;
+  const { shared_with } = req.body;
 
   if (!companyId) {
     return res.status(400).json({ message: "Missing company id" });
@@ -38,6 +39,13 @@ export const uploadCompanyFile = async (req: CustomRequest, res: Response) => {
 
       const newFileDoc = await Files.create(fileData);
 
+
+
+      if (shared_with) {
+        const sharedWith = shared_with.split(",").map((item: string) => item.match(/\d+/)).filter(Boolean).map(Number);
+        await newFileDoc.addEmployees(sharedWith);
+      }
+
       // console.log(newFileDoc);
 
       // const fileDoc = await Files.create(fileData);
@@ -47,7 +55,7 @@ export const uploadCompanyFile = async (req: CustomRequest, res: Response) => {
       // await fileDoc.save();
       return res
         .status(200)
-        .json({ message: "File uploaded successfully", data: newFileDoc });
+        .json({ message: "File uploaded successfully", data: newFileDoc, shared_with, });
     } catch (error) {
       console.log(error);
     }

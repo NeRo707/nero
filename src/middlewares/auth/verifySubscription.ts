@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { Op } from "sequelize";
-import { Employee, Subscription } from "../models/company";
+import { Employee, Subscription } from "../../models/company";
 
 type CustomRequest = Request & {
   companyId?: number;

@@ -3,7 +3,8 @@ import bodyParser from "body-parser";
 import "dotenv/config";
 import companyRoutes from "./routes/companyRoutes";
 import employeeRoutes from "./routes/employeeRoutes";
-import fileRoutes from "./routes/fileRoutes";
+import CompanyFileRoutes from "./routes/companyFileRoutes";
+import EmployeeFileRoutes from "./routes/employeeFileRoutes";
 import sequelize from "./config/db";
 import cookieParser from "cookie-parser";
 import { SwaggerOptions } from "swagger-ui-express";
@@ -22,8 +23,9 @@ app.use(cookieParser());
 // API Endpoints
 
 app.use("/company", companyRoutes);
+app.use("/company/file", CompanyFileRoutes);
 app.use("/company/employee", employeeRoutes);
-app.use("/company/file", fileRoutes);
+app.use("/employee/file", EmployeeFileRoutes);
 
 sequelize.sync({ force: false }).then(() => {
   app.listen(port, "0.0.0.0", () => {
@@ -36,7 +38,7 @@ const swaggerOptions: SwaggerOptions = swOptions;
 const swaggerDocs = swaggerJSDoc(swaggerOptions);
 
 app.use(
-  "/api-docs",
+  "/not-all-api-docs",
   swaggerUI.serve,
   swaggerUI.setup(swaggerDocs)
 );

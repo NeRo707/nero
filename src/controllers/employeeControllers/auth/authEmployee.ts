@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { Employee } from "../../models/company";
+import { Employee } from "../../../models/company";
 import bcrypt from "bcrypt";
-import { generateEmployeeToken } from "../../utils/generateToken";
+import { generateEmployeeToken } from "../../../utils/generateToken";
 
 
 export const authEmployee = async (req: Request, res: Response): Promise<Response | void> => {

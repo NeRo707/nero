@@ -1,6 +1,6 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/db";
-import { TCompany, TEmployee, TFile, TSubscription } from "../types/types";
+import { TBilling, TCompany, TEmployee, TFile, TSubscription } from "../types/types";
 
 const Company = sequelize.define<TCompany>("Company", {
   id: {
@@ -193,6 +193,58 @@ const FileEmployeeMapping = sequelize.define("filejunction", {
   },
 });
 
+const Billing = sequelize.define<TBilling>("Billing", {
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
+    allowNull: false,
+  },
+  company_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: Company,
+      key: "id",
+    },
+  },
+  subscription_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: Subscription,
+      key: "id",
+    },
+  },
+  start_date: {
+    type: DataTypes.DATE,
+    allowNull: false,
+  },
+  end_date: {
+    type: DataTypes.DATE,
+    allowNull: false,
+  },
+  amount_due: {
+    type: DataTypes.FLOAT,
+    allowNull: false,
+  },
+  paid: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  },
+  createdAt: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW,
+  },
+  updatedAt: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW,
+  },
+});
+
 Employee.belongsTo(Company, { foreignKey: "company_id" });
 Company.hasMany(Employee, { foreignKey: "company_id" });
 
@@ -206,7 +258,13 @@ Employee.hasMany(Files, { foreignKey: "employee_id" });
 Files.belongsToMany(Employee, { through: FileEmployeeMapping, foreignKey: "file_id" });
 Employee.belongsToMany(Files, { through: FileEmployeeMapping, foreignKey: "employee_id" });
 
+Company.hasMany(Billing, { foreignKey: "company_id" });
+Billing.belongsTo(Company, { foreignKey: "company_id" });
+
+Subscription.hasMany(Billing, { foreignKey: "subscription_id" });
+Billing.belongsTo(Subscription, { foreignKey: "subscription_id" });
+
 // Files.belongsToMany(Employee, { through: "id" });
 // Files.belongsToMany(Company, { through: "company_id" });
 
-export { Company, Employee, Subscription, Files, FileEmployeeMapping };
+export { Company, Employee, Subscription, Files, FileEmployeeMapping, Billing };

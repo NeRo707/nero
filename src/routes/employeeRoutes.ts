@@ -1,8 +1,8 @@
 import express from "express";
 const router = express.Router();
 
-import verifyEmployeeToken from "../middlewares/authEmployeeMiddleware";
-import refreshEmployeeToken from "../middlewares/refreshEmployeeToken";
+import verifyEmployeeToken from "../middlewares/auth/authEmployeeMiddleware";
+import refreshEmployeeToken from "../middlewares/tokens/refreshEmployeeToken";
 
 import {
   authEmployee,

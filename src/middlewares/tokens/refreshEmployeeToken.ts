@@ -1,14 +1,22 @@
 import { NextFunction, Request, Response } from "express";
-import RefreshToken from "../models/refreshtoken";
+import RefreshToken from "../../models/refreshtoken";
 import { Op } from "sequelize";
-import { generateCompanyToken } from "../utils/generateToken";
+import { generateEmployeeToken } from "../../utils/generateToken";
 
-const refreshOwnerToken = async (
+/**
+ * Verify refresh token and generate new access token for employee.
+ *
+ * @param {Request} req - the request object
+ * @param {Response} res - the response object
+ * @param {NextFunction} next - the next middleware function
+ * @returns {Promise<Response | void>} a Promise that resolves to void
+ */
+const refreshEmployeeToken = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
-  const refreshToken = req.cookies.owner_refreshToken;
+): Promise<Response | void> => {
+  const refreshToken = req.cookies.employee_refreshToken;
   console.log(req.cookies);
 
   if (!refreshToken) {
@@ -32,29 +40,29 @@ const refreshOwnerToken = async (
         .json({ error: "Unauthorized - Invalid refresh token" });
     }
 
-    const { company_id } = storedRefreshToken;
+    const { employee_id } = storedRefreshToken;
 
     // Generate a new access token and refresh token
-    const { owner_accessToken, owner_refreshToken } =
-      await generateCompanyToken(res, company_id);
+    const { employee_accessToken, employee_refreshToken } =
+      await generateEmployeeToken(res, employee_id);
     // Update the refresh token in the database
     await RefreshToken.update(
       {
-        token: owner_refreshToken,
+        token: employee_refreshToken,
         expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
       },
       { where: { token: refreshToken } }
     );
 
     // Set the new refresh token as an HTTP-only cookie
-    res.cookie("owner_refreshToken", owner_refreshToken, {
+    res.cookie("employee_refreshToken", employee_refreshToken, {
       httpOnly: true,
       secure: true,
       sameSite: "strict",
       maxAge: 24 * 60 * 60 * 1000, // 1 day
     });
 
-    return res.json({ owner_accessToken });
+    return res.json({ employee_accessToken });
   } catch (error) {
     return res
       .status(401)
@@ -62,4 +70,4 @@ const refreshOwnerToken = async (
   }
 };
 
-export default refreshOwnerToken;
+export default refreshEmployeeToken;

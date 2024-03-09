@@ -1,16 +1,16 @@
 import { Request, Response } from "express";
-import { Employee, Files } from "../../models/company";
+import { Employee, Files } from "../../../models/company";
 
 export const getCompanyFile = async (
   req: Request,
   res: Response
 ): Promise<Response | void> => {
   const { id } = req.params;
-  //search who have access to this file
+
   if(!id) {
     return res.status(400).json({ message: "Missing file id" });
   }
-  
+  //search file & who have access to this file
   const file = await Files.findAll({
     include: [
       {

@@ -1,5 +1,5 @@
-import verifyOwnerToken from "../middlewares/authCompanyMiddleware";
-import verifySubscription from "../middlewares/verifySubscription";
-import refreshOwnerToken from "../middlewares/refreshOwnerToken";
+import verifyOwnerToken from "./auth/authCompanyMiddleware";
+import verifySubscription from "./auth/verifySubscription";
+import refreshOwnerToken from "./tokens/refreshOwnerToken";
 
 export { verifyOwnerToken, verifySubscription, refreshOwnerToken }

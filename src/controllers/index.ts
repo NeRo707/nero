@@ -1,30 +1,31 @@
 //---------------------------
 
-import { addEmployee } from "./ownerControllers/addEmployee";
-import { getSubscription } from "./ownerControllers/getSubscription";
-import { getSubscriptionPlans } from "./ownerControllers/getSubscriptionPlans";
-import { getSubscriptionStatus } from "./ownerControllers/getSubscriptionStatus";
-import { loginCompany } from "./ownerControllers/loginCompany";
-import { logoutCompany } from "./ownerControllers/logoutCompany";
-import { registerCompany } from "./ownerControllers/registerCompany";
-import { removeEmployee } from "./ownerControllers/removeEmployee";
-import { updateCompanyProfile } from "./ownerControllers/updateCompanyProfile";
-import { verifyEmail } from "./ownerControllers/verifyEmail";
-import { getCompanyProfile } from "./ownerControllers/getCompanyProfile";
+import { addEmployee } from "./ownerControllers/employees/addEmployee";
+import { getSubscription } from "./ownerControllers/subscriptions/getSubscription";
+import { getSubscriptionPlans } from "./ownerControllers/subscriptions/getSubscriptionPlans";
+import { getSubscriptionStatus } from "./ownerControllers/subscriptions/getSubscriptionStatus";
+import { loginCompany } from "./ownerControllers/auth/loginCompany";
+import { logoutCompany } from "./ownerControllers/auth/logoutCompany";
+import { registerCompany } from "./ownerControllers/auth/registerCompany";
+import { removeEmployee } from "./ownerControllers/employees/removeEmployee";
+import { updateCompanyProfile } from "./ownerControllers/profile/updateCompanyProfile";
+import { verifyEmail } from "./ownerControllers/auth/verifyEmail";
+import { getCompanyProfile } from "./ownerControllers/profile/getCompanyProfile";
 
 //----------------------------
 
-import { authEmployee } from "./employeeControllers/authEmployee";
-import { getEmployeeProfile } from "./employeeControllers/getEmployeeProfile";
-import { getFiles } from "./employeeControllers/getFiles";
-import { logoutEmployee } from "./employeeControllers/logoutEmployee";
-import { verifyEmployee } from "./employeeControllers/verifyEmployee";
+import { authEmployee } from "./employeeControllers/auth/authEmployee";
+import { getEmployeeProfile } from "./employeeControllers/profile/getEmployeeProfile";
+import { getFiles } from "./employeeControllers/files/getFiles";
+import { logoutEmployee } from "./employeeControllers/auth/logoutEmployee";
+import { verifyEmployee } from "./employeeControllers/auth/verifyEmployee";
 
 //---------------------------
 
-import { uploadCompanyFile } from "./ownerControllers/uploadCompanyFile";
-import { editUploadedFile } from "./ownerControllers/editUploadedFile";
-import { getCompanyFile } from "./ownerControllers/getCompanyFile";
+import { uploadCompanyFile } from "./ownerControllers/files/uploadCompanyFile";
+import { editUploadedFile } from "./ownerControllers/files/editUploadedFile";
+import { getCompanyFile } from "./ownerControllers/files/getCompanyFile";
+import { deleteUploadedFile } from "./ownerControllers/files/deleteUploadedFile";
 
 //---------------------------
 
@@ -48,4 +49,5 @@ export {
   uploadCompanyFile,
   editUploadedFile,
   getCompanyFile,
+  deleteUploadedFile,
 };

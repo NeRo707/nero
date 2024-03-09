@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { Company } from "../../models/company";
+import { Company } from "../../../models/company";
 import bcrypt from "bcrypt";
-import { generateCompanyToken } from "../../utils/generateToken";
+import { generateCompanyToken } from "../../../utils/generateToken";
 
 /**
  * Handles the login process for a company, including validation, authentication, and token generation.

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Company } from "../../models/company";
+import { Company } from "../../../models/company";
 
 /**
  * Verify the email using the token provided in the request query parameter

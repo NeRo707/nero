@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Employee, Files } from "../../models/company";
+import { Employee, Files } from "../../../models/company";
 
 const getEmployees = async (
 ) => {

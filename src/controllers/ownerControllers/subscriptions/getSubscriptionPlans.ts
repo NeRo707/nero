@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Subscription } from "../../models/company";
+import { Subscription } from "../../../models/company";
 
 /**
  * Retrieves subscription plans and updates their expiration dates.

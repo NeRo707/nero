@@ -1,7 +1,7 @@
 
 import { Response } from "express";
-import { TCustomRequestE as CustomRequest } from "../../types/types";
-import { Employee, Files } from "../../models/company";
+import { TCustomRequestE as CustomRequest } from "../../../types/types";
+import { Employee, Files } from "../../../models/company";
 
 /**
  * Retrieves the files associated with a specific employee and returns them as assigned and shared files.

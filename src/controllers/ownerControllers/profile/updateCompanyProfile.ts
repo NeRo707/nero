@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { Company } from "../../models/company";
+import { Company } from "../../../models/company";
 import  bcrypt  from 'bcrypt';
 
-import { TCustomRequestC as CustomRequest } from "../../types/types";
+import { TCustomRequestC as CustomRequest } from "../../../types/types";
 /**
  * Update the company profile using the provided request data.
  *

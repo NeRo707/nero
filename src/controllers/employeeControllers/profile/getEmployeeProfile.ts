@@ -1,6 +1,6 @@
 import { Response } from "express";
-import { TCustomRequestE as CustomRequest } from "../../types/types";
-import { Employee } from "../../models/company";
+import { TCustomRequestE as CustomRequest } from "../../../types/types";
+import { Employee } from "../../../models/company";
 
 /**
  * Retrieves the employee profile based on the given employeeId in the request.

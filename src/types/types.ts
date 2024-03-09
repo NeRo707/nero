@@ -54,6 +54,7 @@ export type TFile = Model & {
   shared_with_all: boolean;
   employee_id: number;
   addEmployees: any;
+  setEmployees: any;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -62,6 +63,17 @@ export type TFileEmployeeMapping = Model & {
   id: number;
   file_id: number;
   employee_id: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export type TBilling = Model & {
+  id: number;
+  company_id: number;
+  subscription_id: number;
+  start_date: Date;
+  end_date: Date;
+  amount_due: number;
   createdAt: Date;
   updatedAt: Date;
 }
