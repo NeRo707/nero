@@ -49,7 +49,7 @@ const Company = sequelize.define<TCompany>("Company", {
     unique: true,
   },
 });
-
+ 
 const Employee = sequelize.define<TEmployee>("Employees", {
   id: {
     type: DataTypes.INTEGER,
@@ -254,9 +254,8 @@ Company.hasOne(Subscription, { foreignKey: "company_id" });
 Company.hasMany(Files, { foreignKey: "company_id" });
 Employee.hasMany(Files, { foreignKey: "employee_id" });
 
-
 Files.belongsToMany(Employee, { through: FileEmployeeMapping, foreignKey: "file_id" });
-Employee.belongsToMany(Files, { through: FileEmployeeMapping, foreignKey: "employee_id" });
+FileEmployeeMapping.belongsTo(Files, { foreignKey: "file_id" });
 
 Company.hasMany(Billing, { foreignKey: "company_id" });
 Billing.belongsTo(Company, { foreignKey: "company_id" });
@@ -264,6 +263,18 @@ Billing.belongsTo(Company, { foreignKey: "company_id" });
 Subscription.hasMany(Billing, { foreignKey: "subscription_id" });
 Billing.belongsTo(Subscription, { foreignKey: "subscription_id" });
 
+// Employee.belongsTo(Company, { foreignKey: "company_id" });
+// Company.hasMany(Employee, { foreignKey: "company_id" });
+// Subscription.belongsTo(Company, { foreignKey: "company_id" });
+// Company.hasOne(Subscription, { foreignKey: "company_id" });
+// Company.hasMany(Files, { foreignKey: "company_id" });
+// Employee.hasMany(Files, { foreignKey: "employee_id" });
+// Files.belongsToMany(Employee, { through: FileEmployeeMapping, foreignKey: "file_id" });
+// Employee.belongsToMany(Files, { through: FileEmployeeMapping, foreignKey: "employee_id" });
+// Company.hasMany(Billing, { foreignKey: "company_id" });
+// Billing.belongsTo(Company, { foreignKey: "company_id" });
+// Subscription.hasMany(Billing, { foreignKey: "subscription_id" });
+// Billing.belongsTo(Subscription, { foreignKey: "subscription_id" });
 // Files.belongsToMany(Employee, { through: "id" });
 // Files.belongsToMany(Company, { through: "company_id" });
 

@@ -1,47 +1,43 @@
 import express from "express";
 import multer from "multer";
-import { editUploadedFile, getCompanyFile, uploadCompanyFile } from "../controllers";
-import { verifyOwnerToken } from "../middlewares";
+import {
+  editUploadedFile,
+  getEmployeeFiles,
+  uploadEmployeeFile,
+} from "../controllers";
+import { verifyEmployeeToken } from "../middlewares";
 import { verifyUpload } from "../middlewares/auth/verifyUpload";
-import { getAllFiles } from "../controllers/ownerControllers/files/getAllFiles";
+import { deleteEmployeeFile } from "../controllers/employeeControllers/files/deleteEmployeeFile";
 
 const router = express.Router();
 
 const upload = multer({ dest: "uploads/" });
 
-// Upload a new Company file
-//company/file
+// Upload a new Employee file
+//Employee/file
 router.post(
   "/:visibility",
   upload.single("file"),
-  verifyOwnerToken,
+  verifyEmployeeToken,
   verifyUpload,
-  uploadCompanyFile
+  uploadEmployeeFile
 );
 
-//Edit a Company file
-//company/file/:id
-router.patch("/:visibility/:id", verifyOwnerToken, editUploadedFile);
+//Edit a Employee file
+//company/employee/file/:id
+router.patch("/:visibility/:id", verifyEmployeeToken, editUploadedFile);
 
-// Get list of Company files
-//company/file
-router.get("/", verifyOwnerToken, getAllFiles);
-
-// Get a single file
-router.get('/:id/', verifyOwnerToken, getCompanyFile);
+// Get a single file if :id is included else get all files
+//company/employee/file/:id
+router.get("/", verifyEmployeeToken, getEmployeeFiles);
+router.get("/:id", verifyEmployeeToken, getEmployeeFiles);
 
 // Update file access permissions
-router.put("/:id", async (req, res) => {
-  // Validate req.params.id and req.body
-  // Update file in database
-  // Return response
-});
+//company/employee/file/:id
+router.put("/:id", verifyEmployeeToken, editUploadedFile);
 
 // Delete a file
-router.delete("/:id", async (req, res) => {
-  // Validate req.params.id
-  // Delete file from database
-  // Return response
-});
+//company/employee/file/:id
+router.delete("/:id", verifyEmployeeToken, deleteEmployeeFile);
 
 export default router;

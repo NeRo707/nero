@@ -25,7 +25,7 @@ app.use(cookieParser());
 app.use("/company", companyRoutes);
 app.use("/company/file", CompanyFileRoutes);
 app.use("/company/employee", employeeRoutes);
-app.use("/employee/file", EmployeeFileRoutes);
+app.use("/company/employee/file", EmployeeFileRoutes);
 
 sequelize.sync({ force: false }).then(() => {
   app.listen(port, "0.0.0.0", () => {
@@ -36,9 +36,11 @@ sequelize.sync({ force: false }).then(() => {
 const swaggerOptions: SwaggerOptions = swOptions;
 
 const swaggerDocs = swaggerJSDoc(swaggerOptions);
-
+ 
 app.use(
   "/not-all-api-docs",
   swaggerUI.serve,
   swaggerUI.setup(swaggerDocs)
 );
+
+export default app;

@@ -16,7 +16,6 @@ import { getCompanyProfile } from "./ownerControllers/profile/getCompanyProfile"
 
 import { authEmployee } from "./employeeControllers/auth/authEmployee";
 import { getEmployeeProfile } from "./employeeControllers/profile/getEmployeeProfile";
-import { getFiles } from "./employeeControllers/files/getFiles";
 import { logoutEmployee } from "./employeeControllers/auth/logoutEmployee";
 import { verifyEmployee } from "./employeeControllers/auth/verifyEmployee";
 
@@ -26,6 +25,12 @@ import { uploadCompanyFile } from "./ownerControllers/files/uploadCompanyFile";
 import { editUploadedFile } from "./ownerControllers/files/editUploadedFile";
 import { getCompanyFile } from "./ownerControllers/files/getCompanyFile";
 import { deleteUploadedFile } from "./ownerControllers/files/deleteUploadedFile";
+
+//---------------------------
+
+import { getEmployeeFiles } from "./employeeControllers/files/getEmployeeFiles";
+import { uploadEmployeeFile } from "./employeeControllers/files/uploadEmployeeFile";
+import { editEmployeeFile } from "./employeeControllers/files/editEmployeeFile";
 
 //---------------------------
 
@@ -43,11 +48,13 @@ export {
   verifyEmail,
   authEmployee,
   getEmployeeProfile,
-  getFiles,
   logoutEmployee,
   verifyEmployee,
   uploadCompanyFile,
   editUploadedFile,
   getCompanyFile,
   deleteUploadedFile,
+  getEmployeeFiles,
+  uploadEmployeeFile,
+  editEmployeeFile,
 };

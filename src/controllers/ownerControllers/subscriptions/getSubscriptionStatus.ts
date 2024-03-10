@@ -23,6 +23,12 @@ export const getSubscriptionStatus = async (
     order: [["createdAt", "DESC"]],
   });
 
+  if (!subscription) {
+    return res
+      .status(404)
+      .json({ success: false, error: "Subscription not found" });
+  }
+
   const billing = await Billing.findOne({
     where: {
       company_id: companyId,
@@ -44,12 +50,6 @@ export const getSubscriptionStatus = async (
 
   console.log(subscription);
   console.log(billing);
-
-  if (!subscription) {
-    return res
-      .status(404)
-      .json({ success: false, error: "Subscription not found" });
-  }
 
   if (!billing) {
     return res.status(404).json({ success: false, error: "Billing not found" });

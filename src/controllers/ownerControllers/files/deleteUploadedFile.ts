@@ -1,7 +1,10 @@
 import { Request, Response } from "express";
 import { Files } from "../../../models/company";
 
-export const deleteUploadedFile = async (req: Request, res: Response): Promise<Response | void> => {
+export const deleteUploadedFile = async (
+  req: Request,
+  res: Response
+): Promise<Response | void> => {
   const { id } = req.params;
   if (!id) {
     return res.status(400).json({ message: "Missing file id" });

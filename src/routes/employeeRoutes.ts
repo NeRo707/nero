@@ -7,7 +7,6 @@ import refreshEmployeeToken from "../middlewares/tokens/refreshEmployeeToken";
 import {
   authEmployee,
   getEmployeeProfile,
-  getFiles,
   logoutEmployee,
   verifyEmployee,
 } from "../controllers";
@@ -18,7 +17,7 @@ router.post("/logout", logoutEmployee); // v
 router.get("/profile", verifyEmployeeToken, getEmployeeProfile); // v
 router.post("/verify", verifyEmployee); // v
 router.post("/refresh_token", refreshEmployeeToken); // v
-router.get("/workfiles", verifyEmployeeToken, getFiles); // v
+
 // -------------------------------------- OPENAPI ------------------------------------
 /**
  * @openapi
