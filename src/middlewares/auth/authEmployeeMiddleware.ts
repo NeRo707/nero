@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
-
 type CustomRequest = Request & { employeeId?: number };
 const verifyEmployeeToken = (
   req: CustomRequest,
@@ -9,9 +8,18 @@ const verifyEmployeeToken = (
   next: NextFunction
 ) => {
   // console.log(req.cookies.jwt);
+
+  const employeeRefreshToken = req.cookies.employee_refreshToken;
+
+  if (!employeeRefreshToken) {
+    return res
+      .status(401)
+      .json({ success: false, error: "Unauthorized - Log in again" });
+  }
+
   const employeeAccessToken = req.headers.authorization?.split(" ")[1];
 
-  console.log("-------",req.headers.authorization);
+  console.log("-------", req.headers.authorization);
 
   console.log(employeeAccessToken);
 
@@ -32,9 +40,10 @@ const verifyEmployeeToken = (
             console.log(err.message);
             return res
               .status(401)
-              .json({ success: false, error: "Unauthorized - Invalid token" });
+              .json({ success: false, error: "Unauthorized - Invalid_expired token log in again or refresh token" });
           }
           // Attach the decoded data to the request for further processing
+          console.log("12314231423", decoded);
           if (decoded.employeeId) {
             req.employeeId = decoded.employeeId;
           }

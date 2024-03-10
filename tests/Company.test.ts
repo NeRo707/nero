@@ -18,7 +18,12 @@ jest.mock("../../../utils/generateToken", () => ({
   generateCompanyToken: jest.fn(),
 }));
 
-describe("loginCompany", () => {
+jest.mock("../src/controllers", () => ({
+  loginCompany: jest.fn(),
+  logoutCompany: jest.fn(),
+}));
+
+describe("CompanyAuth", () => {
   let req: Request;
   let res: Response;
 
@@ -28,7 +33,7 @@ describe("loginCompany", () => {
         email: "test@example.com",
         password: "password123",
       },
-    } as Request;
+    } as unknown as Request;
     res = {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
@@ -74,7 +79,6 @@ describe("loginCompany", () => {
   it("should return 401 if password is incorrect", async () => {
     const company = { dataValues: { password: "hashedPassword" } };
     (Company.findOne as jest.Mock).mockResolvedValueOnce(company);
-    (bcrypt.compare as jest.Mock).mockResolvedValueOnce(false);
     await loginCompany(req, res);
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({
@@ -120,5 +124,13 @@ describe("loginCompany", () => {
       success: false,
       error: "Server Error",
     });
+  });
+
+  it("should return 400 if no fields are provided", async () => {
+    req.body = {};
+
+    await loginCompany(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(400);
   });
 });

@@ -4,6 +4,15 @@ import jwt from "jsonwebtoken";
 type CustomRequest = Request & { companyId?: number };
 const verifyOwnerToken = (req: CustomRequest, res: any, next: NextFunction) => {
   // console.log(req.cookies.jwt);
+
+  const owner_refreshToken = req.cookies.owner_refreshToken;
+
+  if (!owner_refreshToken) {
+    return res
+      .status(401)
+      .json({ success: false, error: "Unauthorized - Log in again" });
+  }
+
   const owner_token = req.headers.authorization?.split(" ")[1];
 
   console.log(req.headers.authorization);

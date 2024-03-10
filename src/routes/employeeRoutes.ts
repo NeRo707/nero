@@ -11,7 +11,6 @@ import {
   verifyEmployee,
 } from "../controllers";
 
-
 router.post("/login", authEmployee); // v
 router.post("/logout", logoutEmployee); // v
 router.get("/profile", verifyEmployeeToken, getEmployeeProfile); // v
@@ -56,8 +55,8 @@ router.post("/refresh_token", refreshEmployeeToken); // v
  *         description: Profile retrieved
  *       400:
  *         description: Bad request
-*
-*/
+ *
+ */
 /**
  * @openapi
  * paths:
