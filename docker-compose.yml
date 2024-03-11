@@ -5,7 +5,7 @@ services:
     image: mysql
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: db123
+      MYSQL_DATABASE: sweefty
       MYSQL_ROOT_PASSWORD: root
       MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
     ports:
@@ -14,8 +14,6 @@ services:
       - 3306
     volumes:
       - db:/var/lib/mysql
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-    
 
   web:
     depends_on:
