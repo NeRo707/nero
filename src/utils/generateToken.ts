@@ -40,17 +40,25 @@ const generateCompanyToken = async (res: Response, companyId: number) => {
   };
 };
 
-const generateEmployeeToken = async (res: Response, employeeId: number) => {
-  const employee_accessToken = jwt.sign({ employeeId }, secret, {
+const generateEmployeeToken = async (employeeId: number, companyId: number) => {
+  const employee_accessToken = jwt.sign({ employeeId, companyId }, secret, {
     expiresIn: "25m",
   });
 
-  const employee_refreshToken = jwt.sign({ employeeId }, refreshSecret, {
-    expiresIn: "1d",
-  });
+  const employee_refreshToken = jwt.sign(
+    { employeeId, companyId },
+    refreshSecret,
+    {
+      expiresIn: "1d",
+    }
+  );
 
   const refreshToken = await RefreshToken.findOne({
-    where: { employee_id: employeeId, expiresAt: { [Op.gte]: new Date() } },
+    where: {
+      employee_id: employeeId,
+      company_id: companyId,
+      expiresAt: { [Op.gte]: new Date() },
+    },
   });
 
   // console.log(
@@ -61,6 +69,7 @@ const generateEmployeeToken = async (res: Response, employeeId: number) => {
   if (!refreshToken) {
     await RefreshToken.create({
       employee_id: employeeId,
+      company_id: companyId,
       expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24), // 1 day
       token: employee_refreshToken,
     });

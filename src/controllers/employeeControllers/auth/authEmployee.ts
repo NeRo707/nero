@@ -3,8 +3,10 @@ import { Employee } from "../../../models/company";
 import bcrypt from "bcrypt";
 import { generateEmployeeToken } from "../../../utils/generateToken";
 
-
-export const authEmployee = async (req: Request, res: Response): Promise<Response | void> => {
+export const authEmployee = async (
+  req: Request,
+  res: Response
+): Promise<Response | void> => {
   const { email, password } = req.body;
   console.log(req.body);
   if (!email || !password) {
@@ -18,7 +20,7 @@ export const authEmployee = async (req: Request, res: Response): Promise<Respons
     },
   });
 
-  console.log("DB-Employee: ",employee);
+  console.log("DB-Employee: ", employee);
 
   if (!employee) {
     return res.status(401).json({ message: "Invalid credentials" });
@@ -47,7 +49,10 @@ export const authEmployee = async (req: Request, res: Response): Promise<Respons
 
   // Create a JWT token
   const { employee_accessToken, employee_refreshToken } =
-    await generateEmployeeToken(res, employee.dataValues.id);
+    await generateEmployeeToken(
+      employee.dataValues.id,
+      employee.dataValues.company_id
+    );
 
   // console.log(employee.dataValues);
 

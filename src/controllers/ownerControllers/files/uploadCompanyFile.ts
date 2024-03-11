@@ -40,7 +40,6 @@ export const uploadCompanyFile = async (req: CustomRequest, res: Response) => {
       const newFileDoc = await Files.create(fileData);
 
 
-
       if (shared_with) {
         const sharedWith = shared_with.split(",").map((item: string) => item.match(/\d+/)).filter(Boolean).map(Number);
         await newFileDoc.addEmployees(sharedWith);

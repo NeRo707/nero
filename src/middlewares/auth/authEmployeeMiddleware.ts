@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
-type CustomRequest = Request & { employeeId?: number };
+type CustomRequest = Request & { employeeId?: number; companyId?: number };
 const verifyEmployeeToken = (
   req: CustomRequest,
   res: any,
@@ -40,12 +40,17 @@ const verifyEmployeeToken = (
             console.log(err.message);
             return res
               .status(401)
-              .json({ success: false, error: "Unauthorized - Invalid_expired token log in again or refresh token" });
+              .json({
+                success: false,
+                error:
+                  "Unauthorized - Invalid_expired token log in again or refresh token",
+              });
           }
           // Attach the decoded data to the request for further processing
-          console.log("12314231423", decoded);
-          if (decoded.employeeId) {
+          console.log("-------------decoded-----------\n", decoded);
+          if (decoded.employeeId && decoded.companyId) {
             req.employeeId = decoded.employeeId;
+            req.companyId = decoded.companyId;
           }
 
           // Continue processing the request

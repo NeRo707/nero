@@ -7,18 +7,20 @@ export const getEmployeeFiles = async (
   res: Response
 ): Promise<Response | void> => {
   const { id } = req.params;
-  const { employeeId } = req;
-  console.log(Number(id), employeeId);
+  const { employeeId, companyId } = req;
+  // console.log(Number(id), employeeId);
 
   try {
     if (!Number(id)) {
+      console.log(employeeId, companyId);
       // Search for all files belonging to this employee
       const fileEmployeeMappings = await FileEmployeeMapping.findAll({
-        where: { employee_id: employeeId },
+        where: { employeeId },
         attributes: [],
         include: [
           {
             model: Files,
+            where: { company_id: companyId },
             attributes: [
               "id",
               "file_name",
@@ -59,12 +61,13 @@ export const getEmployeeFiles = async (
       const fileEmployeeMapping: any = await FileEmployeeMapping.findOne({
         where: {
           file_id: Number(id),
-          employee_id: employeeId,
+          employeeId,
         },
         attributes: [],
         include: [
           {
             model: Files,
+            where: { company_id: companyId },
             attributes: [
               "id",
               "file_name",

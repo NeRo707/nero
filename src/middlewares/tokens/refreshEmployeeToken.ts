@@ -40,11 +40,11 @@ const refreshEmployeeToken = async (
         .json({ error: "Unauthorized - Invalid refresh token" });
     }
 
-    const { employee_id } = storedRefreshToken;
+    const { employee_id, company_id } = storedRefreshToken;
 
     // Generate a new access token and refresh token
     const { employee_accessToken, employee_refreshToken } =
-      await generateEmployeeToken(res, employee_id);
+      await generateEmployeeToken(employee_id, company_id);
     // Update the refresh token in the database
     await RefreshToken.update(
       {

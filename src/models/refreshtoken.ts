@@ -15,7 +15,7 @@ const RefreshToken = sequelize.define<TToken>("RefreshToken", {
   },
   company_id: {
     type: DataTypes.INTEGER,
-    allowNull: true,
+    allowNull: false,
     references: {
       model: "Companies",
       key: "id",
