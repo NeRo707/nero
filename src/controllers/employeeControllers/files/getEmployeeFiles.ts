@@ -79,8 +79,28 @@ export const getEmployeeFiles = async (
         ],
       });
 
+
       if (!fileEmployeeMapping) {
-        return res.status(404).json({ message: "File not found" });
+
+        const sharedFile = await Files.findOne({
+          where: {
+            shared_with_all: true,
+            id: Number(id),
+          },
+          attributes: [
+            "id",
+            "file_name",
+            "file_type",
+            "shared_with_all",
+            "company_id",
+          ],
+        });
+
+        if(!sharedFile) {
+          return res.status(404).json({ message: "File not found" });
+        }
+
+        return res.status(200).json({ sharedFile: sharedFile });
       }
 
       const file = fileEmployeeMapping.File;

@@ -65,7 +65,7 @@ export const editUploadedFile = async (
         await file.addEmployees(sharedWith);
       } catch (error) {
         console.log(error);
-        return res.status(500).json({ message: "Internal server error" });
+        return res.status(500).json({ message: "Internal server error employee with given ID Doesnt exist" });
       }
     }
 
