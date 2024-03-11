@@ -1,5 +1,8 @@
 
 # Has OPENAPI SwaggerUI for testing basic auth, but Testing with POSTMAN is Recommended
+
+### just use xampp with mysql and it will work
+
 # to fill subscriptions table
 
 INSERT INTO subscriptions (id, plan_name, max_files_per_month, max_users, price_per_user, fixed_price, additional_file_cost, company_id, expiration_date, createdAt, updatedAt)
