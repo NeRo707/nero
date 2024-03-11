@@ -12,7 +12,7 @@ import {
   registerCompany,
   removeEmployee,
   updateCompanyProfile,
-  verifyEmail,
+  verifyCompany,
 } from "../controllers";
 
 import {
@@ -33,7 +33,7 @@ router.post(
 ); //v
 
 router.delete("/employee/:id", verifyOwnerToken, removeEmployee); // v
-router.get("/verify", verifyEmail); //v
+router.get("/verify", verifyCompany); //v
 
 router.post("/register", registerCompany); //v
 router.post("/login", loginCompany); // v

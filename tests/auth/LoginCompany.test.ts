@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
-import { loginCompany } from "../src/controllers/ownerControllers/auth/loginCompany";
-import { Company } from "../src/models/company";
+import { loginCompany } from "../../src/controllers/ownerControllers/auth/loginCompany";
+import { Company } from "../../src/models/company";
 import bcrypt from "bcrypt";
-import { generateCompanyToken } from "../src/utils/generateToken";
+import { generateCompanyToken } from "../../src/utils/generateToken";
 
-jest.mock("../../../models/company", () => ({
+jest.mock("../../src/models/company", () => ({
   Company: {
     findOne: jest.fn(),
   },
@@ -14,16 +14,16 @@ jest.mock("bcrypt", () => ({
   compare: jest.fn(),
 }));
 
-jest.mock("../../../utils/generateToken", () => ({
+jest.mock("../../src/utils/generateToken", () => ({
   generateCompanyToken: jest.fn(),
 }));
 
-jest.mock("../src/controllers", () => ({
+jest.mock("../../src/controllers", () => ({
   loginCompany: jest.fn(),
   logoutCompany: jest.fn(),
 }));
 
-describe("CompanyAuth", () => {
+describe("LoginCompany", () => {
   let req: Request;
   let res: Response;
 

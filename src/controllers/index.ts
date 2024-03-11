@@ -9,7 +9,7 @@ import { logoutCompany } from "./ownerControllers/auth/logoutCompany";
 import { registerCompany } from "./ownerControllers/auth/registerCompany";
 import { removeEmployee } from "./ownerControllers/employees/removeEmployee";
 import { updateCompanyProfile } from "./ownerControllers/profile/updateCompanyProfile";
-import { verifyEmail } from "./ownerControllers/auth/verifyEmail";
+import { verifyCompany } from "./ownerControllers/auth/verifyCompany";
 import { getCompanyProfile } from "./ownerControllers/profile/getCompanyProfile";
 
 //----------------------------
@@ -45,7 +45,7 @@ export {
   registerCompany,
   removeEmployee,
   updateCompanyProfile,
-  verifyEmail,
+  verifyCompany,
   authEmployee,
   getEmployeeProfile,
   logoutEmployee,

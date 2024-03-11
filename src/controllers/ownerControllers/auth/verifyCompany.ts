@@ -8,7 +8,7 @@ import { Company } from "../../../models/company";
  * @param {Response} res - the response object
  * @return {Promise<Response | void>} a Promise that resolves to void
  */
-export const verifyEmail = async (req: Request, res: Response): Promise<Response | void> => {
+export const verifyCompany = async (req: Request, res: Response): Promise<Response | void> => {
   try {
     const { token } = req.query;
 
